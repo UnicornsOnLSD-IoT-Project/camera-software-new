@@ -22,7 +22,7 @@ pub fn time_lapse_loop() {
         let url = format!("{}/UploadImage", camera_software_settings.base_url);
 
         let response = reqwest_client
-            .post(Url::parse(&url[..]).expect("Failed to parse URL!"))
+            .post(Url::parse(url.as_str()).expect("Failed to parse URL!"))
             .body(image)
             .header(
                 "camera_token",
