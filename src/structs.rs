@@ -3,7 +3,7 @@ use uuid::Error as UuidError;
 use uuid::Uuid;
 
 /// This struct holds all the camera software settings and is loaded on startup.
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct CameraSoftwareSettings {
     pub base_url: String,
     pub camera_token: Uuid,
@@ -28,7 +28,7 @@ impl CameraSoftwareSettings {
 impl Default for CameraSoftwareSettings {
     fn default() -> Self {
         CameraSoftwareSettings {
-            base_url: "NOT_SET",
+            base_url: "NOT_SET".to_string(),
             camera_token: Uuid::nil(),
         }
     }
