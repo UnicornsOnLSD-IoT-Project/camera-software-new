@@ -17,6 +17,7 @@ pub fn setup_camera(resolution_divider: u32) -> Result<SimpleCamera, CameraError
     let settings = CameraSettings {
         width: width,
         height: height,
+        encoding: MMAL_ENCODING_JPEG,
         ..CameraSettings::default()
     };
     camera.configure(settings);
