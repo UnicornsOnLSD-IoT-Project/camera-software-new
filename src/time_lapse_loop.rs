@@ -12,12 +12,11 @@ pub fn time_lapse_loop() {
     let camera_software_settings: CameraSoftwareSettings =
         confy::load("camera-software-new").expect("Unable to read config!");
 
-    let mut camera = setup_camera(1).expect("Failed to setup camera!");
-
     // 10 minutes
     const DELAY: Duration = Duration::from_millis(600000);
 
     loop {
+        let mut camera = setup_camera(1).expect("Failed to setup camera!");
         let image = take_photo(&mut camera).expect("Failed to take photo!");
         let url = format!("{}/UploadImage", camera_software_settings.base_url);
 
