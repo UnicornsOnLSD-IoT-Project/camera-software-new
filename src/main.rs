@@ -19,7 +19,7 @@ fn main() {
         .base_url
         == "NOT_SET".to_string()
     {
-        qr_scanner::initial_setup();
+        qr_scanner::initial_setup(&display_tx);
     }
 
     time_lapse_loop(&display_tx);
