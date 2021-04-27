@@ -16,6 +16,7 @@ use std::time::SystemTime;
 pub fn time_lapse_loop(display_tx: &Sender<DisplayMessage>) {
     const WIDTH: u16 = 4056;
     const HEIGHT: u16 = 3040;
+    const SLEEP_INTERVAL: Duration = Duration::from_secs(5);
 
     let reqwest_client = Client::new();
     let camera_software_settings: CameraSoftwareSettings =
@@ -116,7 +117,12 @@ pub fn time_lapse_loop(display_tx: &Sender<DisplayMessage>) {
                     let display_message = DisplayMessage {
                         status_message: Some("Ready".to_string()),
                         next_image_time: Some(datetime),
-                        next_conf_update: None,
+                        next_conf_update: Some(
+                            SystemTime::now()
+                                .checked_add(SLEEP_INTERVAL)
+                                .expect("Failed to calculate sleep interval!")
+                                .into(),
+                        ),
                     };
                     display_tx
                         .send(display_message)
@@ -135,7 +141,20 @@ pub fn time_lapse_loop(display_tx: &Sender<DisplayMessage>) {
             };
 
             println!();
+        } else {
+            display_tx
+                .send(DisplayMessage {
+                    status_message: None,
+                    next_image_time: None,
+                    next_conf_update: Some(
+                        SystemTime::now()
+                            .checked_add(SLEEP_INTERVAL)
+                            .expect("Failed to calculate sleep interval!")
+                            .into(),
+                    ),
+                })
+                .expect("Failed to send message to display thread!")
         }
-        sleep(Duration::from_secs(5));
+        sleep(SLEEP_INTERVAL);
     }
 }
