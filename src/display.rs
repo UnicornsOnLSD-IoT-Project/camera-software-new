@@ -1,6 +1,6 @@
 use crate::structs::DisplayMessage;
 
-use chrono::offset::Utc;
+use chrono::offset::Local;
 use chrono::DateTime;
 use rppal::i2c::I2c;
 use ssd1306::{displaysize::DisplaySize128x32, mode::TerminalMode, Builder, I2CDIBuilder};
@@ -22,8 +22,8 @@ pub fn display_thread(display_rx: Receiver<DisplayMessage>) {
     disp.clear().expect("Failed to clear display!");
 
     let mut status_message: Option<String> = None;
-    let mut next_image_time: Option<DateTime<Utc>> = None;
-    let mut next_conf_update: Option<DateTime<Utc>> = None;
+    let mut next_image_time: Option<DateTime<Local>> = None;
+    let mut next_conf_update: Option<DateTime<Local>> = None;
 
     // This loop waits for messages and writes them to the display
     loop {

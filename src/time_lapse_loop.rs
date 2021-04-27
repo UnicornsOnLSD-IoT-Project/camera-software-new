@@ -1,12 +1,11 @@
-use crate::pi_camera::*;
 use crate::structs::CameraSoftwareSettings;
 use crate::structs::DisplayMessage;
-use chrono::offset::Utc;
+use chrono::offset::Local;
 use chrono::DateTime;
-use rascam::*;
 use reqwest::blocking::Client;
 use reqwest::header::CONTENT_TYPE;
 use reqwest::Url;
+use std::process::Command;
 use std::sync::mpsc::Sender;
 use std::thread::sleep;
 use std::time::Duration;
@@ -20,24 +19,10 @@ pub fn time_lapse_loop(display_tx: &Sender<DisplayMessage>) {
     // 30 minutes
     const DELAY: Duration = Duration::from_millis(3600000 / 2);
 
-    const WIDTH: u32 = 4056;
-    const HEIGHT: u32 = 3040;
-
-    let mut counter = 0;
-
-    let mut camera = setup_camera(1).expect("Failed to setup camera!");
+    const WIDTH: u16 = 4056;
+    const HEIGHT: u16 = 3040;
 
     loop {
-        counter = counter + 1;
-        println!("{}", counter);
-
-        camera.configure(CameraSettings {
-            width: WIDTH,
-            height: HEIGHT,
-            encoding: MMAL_ENCODING_JPEG,
-            ..CameraSettings::default()
-        });
-
         display_tx
             .send(DisplayMessage {
                 status_message: Some("Taking photo".to_string()),
@@ -46,7 +31,18 @@ pub fn time_lapse_loop(display_tx: &Sender<DisplayMessage>) {
             })
             .expect("Failed to send message to display thread!");
 
-        let image = take_photo(&mut camera).expect("Failed to take photo!");
+        let raspistill_output = Command::new("raspistill")
+            .args(&[
+                "-o",
+                "-",
+                "-w",
+                &WIDTH.to_string(),
+                "-h",
+                &HEIGHT.to_string(),
+            ])
+            .output()
+            .expect("Failed to execute raspistill!");
+
         let url = format!("{}/UploadImage", camera_software_settings.base_url);
 
         display_tx
@@ -59,7 +55,7 @@ pub fn time_lapse_loop(display_tx: &Sender<DisplayMessage>) {
 
         let response = reqwest_client
             .post(Url::parse(url.as_str()).expect("Failed to parse URL!"))
-            .body(image)
+            .body(raspistill_output.stdout)
             .header(
                 "camera_token",
                 camera_software_settings.camera_token.to_string(),
@@ -74,7 +70,7 @@ pub fn time_lapse_loop(display_tx: &Sender<DisplayMessage>) {
 
         match SystemTime::now().checked_add(DELAY) {
             Some(next_image_time) => {
-                let datetime: DateTime<Utc> = next_image_time.into();
+                let datetime: DateTime<Local> = next_image_time.into();
                 let display_message = DisplayMessage {
                     status_message: Some("Ready".to_string()),
                     next_image_time: Some(datetime),

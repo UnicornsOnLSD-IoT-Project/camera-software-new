@@ -1,4 +1,4 @@
-use chrono::offset::Utc;
+use chrono::offset::Local;
 use chrono::DateTime;
 use serde::{Deserialize, Serialize};
 use uuid::Error as UuidError;
@@ -38,6 +38,6 @@ impl Default for CameraSoftwareSettings {
 
 pub struct DisplayMessage {
     pub status_message: Option<String>,
-    pub next_image_time: Option<DateTime<Utc>>,
-    pub next_conf_update: Option<DateTime<Utc>>,
+    pub next_image_time: Option<DateTime<Local>>,
+    pub next_conf_update: Option<DateTime<Local>>,
 }
