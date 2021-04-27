@@ -9,7 +9,7 @@ edition = "2018"
 [dependencies]
 bardecoder = "0.2.2"
 image = "0.22"
-rascam = "0.0.2"
+rascam = { version = "0.0.2", features = ["debug"] }
 confy = "0.4.0"
 uuid = { version = "0.8.2", features = ["serde"] }
 serde = { version = "1.0.123", features = ["derive"] }

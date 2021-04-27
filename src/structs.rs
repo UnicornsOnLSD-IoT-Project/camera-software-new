@@ -1,3 +1,5 @@
+use chrono::offset::Utc;
+use chrono::DateTime;
 use serde::{Deserialize, Serialize};
 use uuid::Error as UuidError;
 use uuid::Uuid;
@@ -32,4 +34,10 @@ impl Default for CameraSoftwareSettings {
             camera_token: Uuid::nil(),
         }
     }
+}
+
+pub struct DisplayMessage {
+    pub status_message: Option<String>,
+    pub next_image_time: Option<DateTime<Utc>>,
+    pub next_conf_update: Option<DateTime<Utc>>,
 }

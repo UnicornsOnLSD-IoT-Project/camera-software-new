@@ -1,4 +1,5 @@
 use crate::display::display_thread;
+use crate::structs::DisplayMessage;
 use crate::time_lapse_loop::time_lapse_loop;
 use std::sync::mpsc;
 use std::thread;
@@ -10,7 +11,7 @@ mod structs;
 mod time_lapse_loop;
 
 fn main() {
-    let (display_tx, display_rx) = mpsc::channel::<String>();
+    let (display_tx, display_rx) = mpsc::channel::<DisplayMessage>();
     thread::spawn(move || display_thread(display_rx));
 
     // If the base url isn't set, assume that initial setup hasn't been completed

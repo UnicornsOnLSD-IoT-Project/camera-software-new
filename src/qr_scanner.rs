@@ -1,15 +1,20 @@
 use crate::pi_camera::{setup_camera, take_photo};
 use crate::structs::CameraSoftwareSettings;
+use crate::structs::DisplayMessage;
 use std::sync::mpsc::Sender;
 
 /// Gets camera settings from a QR and saves it to the conf file
-pub fn initial_setup(display_tx: &Sender<String>) {
+pub fn initial_setup(display_tx: &Sender<DisplayMessage>) {
     let mut camera = setup_camera(4).expect("Failed to setup camera!");
 
     let mut is_done = false;
 
     display_tx
-        .send("Scan first QR code".to_string())
+        .send(DisplayMessage {
+            status_message: Some("Scan first QR code".to_string()),
+            next_image_time: None,
+            next_conf_update: None,
+        })
         .expect("Failed to send message to display thread!");
 
     while is_done == false {
