@@ -41,3 +41,9 @@ pub struct DisplayMessage {
     pub next_image_time: Option<DateTime<Local>>,
     pub next_conf_update: Option<DateTime<Local>>,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Config {
+    pub camera_id: uuid::Uuid,
+    pub interval: i16,
+}
